@@ -19,10 +19,10 @@ public class CFrame extends javax.swing.JFrame {
     public CFrame() {
         initComponents();
     }
-    DataInputStream entrada = null;
-    DataOutputStream salida = null;
 
-    Socket clienteSocket;
+    static Socket clienteSocket;
+    static DataInputStream entrada;
+    static DataOutputStream salida;
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -54,23 +54,25 @@ public class CFrame extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addContainerGap())
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(txtfield, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(bsend, javax.swing.GroupLayout.DEFAULT_SIZE, 83, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(bsend, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 10, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtfield, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                    .addComponent(txtfield, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(bsend, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -88,9 +90,21 @@ public class CFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bsendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bsendActionPerformed
+        try {
+           String msg = "";
 
-        
-      
+            msg = txtfield.getText().trim();
+
+            salida.writeUTF(msg);
+            txtarea.append("Cliente :"+txtfield.getText());
+            txtarea.append(System.getProperty("line.separator"));
+            
+            txtfield.setText("");
+        } catch (IOException ex) {
+            Logger.getLogger(CFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
     }//GEN-LAST:event_bsendActionPerformed
 
     public static void main(String args[]) throws IOException {
@@ -101,23 +115,7 @@ public class CFrame extends javax.swing.JFrame {
             }
         });
 
-        CFrame cf = new CFrame();
-        cf.Conexion();
-        cf.enviarDatos();
-       
-
-    }
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bsend;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea txtarea;
-    private javax.swing.JTextField txtfield;
-    // End of variables declaration//GEN-END:variables
-
-    public void Conexion() {
-
+        String msgin = "";
         try {
             System.out.println("Creando socket cliente");
             clienteSocket = new Socket();
@@ -125,28 +123,29 @@ public class CFrame extends javax.swing.JFrame {
 
             InetSocketAddress direc = new InetSocketAddress("localhost", 6000);
             clienteSocket.connect(direc);
+
+            entrada = new DataInputStream(clienteSocket.getInputStream());
+            salida = new DataOutputStream(clienteSocket.getOutputStream());
+
+            while (!msgin.equals("exit")) {
+
+                msgin = entrada.readUTF();
+                txtarea.setText(txtarea.getText().trim() + "\nServidor :" + msgin);
+
+            }
+
         } catch (IOException ex) {
             Logger.getLogger(CFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
-    
-    public void enviarDatos() throws IOException{
-    
-        while(true){
-            String msj=null;
-            
-            salida=new DataOutputStream(clienteSocket.getOutputStream());
-            
-            msj=JOptionPane.showInputDialog("Inserte un mensaje: ");
-            salida.writeUTF(msj);
-            
-            
-       
-        }
-    
-    }
-    
-    
-    
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bsend;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private static javax.swing.JTextArea txtarea;
+    private javax.swing.JTextField txtfield;
+    // End of variables declaration//GEN-END:variables
+
 }
