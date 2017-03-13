@@ -2,13 +2,13 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
+
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
+
 
 /**
  *
@@ -96,10 +96,13 @@ public class CFrame extends javax.swing.JFrame {
             msg = txtfield.getText().trim();
 
             salida.writeUTF(msg);
-            txtarea.append("Cliente :"+txtfield.getText());
-            txtarea.append(System.getProperty("line.separator"));
             
+            txtarea.append("\n Cliente :"+txtfield.getText());
+            //txtarea.append(System.getProperty("line.separator"));
+            salida.flush();
             txtfield.setText("");
+            
+            
         } catch (IOException ex) {
             Logger.getLogger(CFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -116,6 +119,8 @@ public class CFrame extends javax.swing.JFrame {
         });
 
         String msgin = "";
+     
+        
         try {
             System.out.println("Creando socket cliente");
             clienteSocket = new Socket();
@@ -130,14 +135,16 @@ public class CFrame extends javax.swing.JFrame {
             while (!msgin.equals("exit")) {
 
                 msgin = entrada.readUTF();
-                txtarea.setText(txtarea.getText().trim() + "\nServidor :" + msgin);
-
+                
+                txtarea.setText(txtarea.getText().trim() + "\n Servidor :" + msgin);
+                
             }
 
         } catch (IOException ex) {
             Logger.getLogger(CFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
