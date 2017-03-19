@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -103,6 +104,17 @@ public class CFrame extends javax.swing.JFrame {
             txtfield.setText("");
             
             
+            if(msg.equalsIgnoreCase("exit")){
+            
+             
+                clienteSocket.close();
+                
+                JOptionPane.showMessageDialog(bsend, "cerrado");
+            
+            
+            }
+            
+            
         } catch (IOException ex) {
             Logger.getLogger(CFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -132,11 +144,12 @@ public class CFrame extends javax.swing.JFrame {
             entrada = new DataInputStream(clienteSocket.getInputStream());
             salida = new DataOutputStream(clienteSocket.getOutputStream());
 
-            while (!msgin.equals("exit")) {
+            while (true) {
 
                 msgin = entrada.readUTF();
                 
                 txtarea.setText(txtarea.getText().trim() + "\n Servidor :" + msgin);
+                
                 
             }
 
